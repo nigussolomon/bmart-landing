@@ -1,113 +1,152 @@
+"use client";
+import { ContainedInputs } from "@/components/ui/inputs/text";
+import {
+  Anchor,
+  Box,
+  Button,
+  Divider,
+  Flex,
+  Modal,
+  Text,
+  Title,
+} from "@mantine/core";
+import { IconId, IconQrcode } from "@tabler/icons-react";
+import Landing from "@/assets/landing.svg";
 import Image from "next/image";
-import { Geist, Geist_Mono } from "next/font/google";
+import { useEffect, useState } from "react";
+import { notifications } from "@mantine/notifications";
+import { useDisclosure } from "@mantine/hooks";
+import { QRCodeSVG } from "qrcode.react";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+export default function Index() {
+  const [error, setError] = useState<undefined | string>();
+  const [faydaNumber, setFaydaNumber] = useState<undefined | string>();
+  const [loading, setLoading] = useState<boolean>(false);
+  const [user, setUser] = useState<{ fullName: string; phoneNumber: string }>();
+  const [opened, { toggle }] = useDisclosure(false);
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+  useEffect(() => {
+    setError(undefined);
+  }, [faydaNumber]);
 
-export default function Home() {
+  const validator = async () => {
+    setLoading(true);
+    if (!faydaNumber) {
+      setError("FAYDA Identification Number is required");
+      setLoading(false);
+      return false;
+    } else if (faydaNumber.length !== 16) {
+      setError("FAYDA Identification Number must be 16 characters");
+      setLoading(false);
+      return false;
+    } else if (isNaN(Number(faydaNumber))) {
+      setError("FAYDA Identification Number can only contain numbers");
+      setLoading(false);
+      return false;
+    } else {
+      setError(undefined);
+    }
+
+    const response = await fetch(
+      `https://67d2458a90e0670699bcdd19.mockapi.io/get_user/${Number(
+        faydaNumber
+      )}`
+    );
+    const data = await response.json();
+
+    if (data.id) {
+      setError(undefined);
+      setUser(data);
+      toggle();
+      notifications.show({
+        title: "Success",
+        message: "You have been found to be a valid tester! 🌟",
+        position: "bottom-right",
+      });
+    } else {
+      setError("A user with this FAYDA Id wasn't found in our testers list");
+    }
+
+    setLoading(false);
+    return true;
+  };
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/pages/index.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+    <Box>
+      <Modal opened={opened} onClose={toggle} title="App Download QR">
+        <Flex align="center" gap={15}>
+          <QRCodeSVG value={user?.fullName || ""} />
+          <Flex direction="column">
+            <Title order={5}>{user?.fullName}</Title>
+            <Title c="dimmed" order={5}>
+              {user?.phoneNumber}
+            </Title>
+          </Flex>
+        </Flex>
+        <Divider my="xs" />
+      </Modal>
+      <Flex gap="xl" style={{ width: "100%" }} justify="space-between">
+        <Flex justify="center" gap={50} direction="column">
+          <Box>
+            <Title mb="xs" mt="xl">
+              Welcome to,{" "}
+              <span
+                style={{
+                  color: "var(--mantine-color-primary-5)",
+                  fontWeight: 900,
+                }}
+              >
+                BMart&apos;s
+              </span>{" "}
+              Testing Registration Platform
+            </Title>
+            <Text>
+              Join us in shaping the future! Register now to participate in
+              BMart&apos;s exclusive testing program, where you&apos;ll get
+              early access to our latest innovations.
+            </Text>
+          </Box>
+          <Flex gap="sm" direction="column">
+            <ContainedInputs
+              disabled={loading}
+              value={faydaNumber}
+              setValue={setFaydaNumber}
+              error={error}
+              label="FAYDA Identification Number"
+              placeholder="Enter FAYDA Identification Number"
+              icon={<IconId size={20} />}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+            <Button
+              loading={loading}
+              onClick={validator}
+              justify="space-between"
+              rightSection={<IconQrcode size={25} />}
+              size="lg"
+              color="dark"
+              variant="filled"
+              disabled={loading}
+            >
+              <Text fw={700} size="sm">
+                GET APP DOWNLOAD QR
+              </Text>
+            </Button>
+            <Text size="xs">
+              If you aren&apos;t in the testing list,{" "}
+              <Anchor c="primary.9">Join Testers List</Anchor>
+            </Text>
+          </Flex>
+        </Flex>
+
+        <Flex visibleFrom="md" justify="flex-end">
           <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+            style={{ padding: 0, margin: 0 }}
+            src={Landing.src}
+            width={800}
+            height={500}
+            alt="Landing"
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+        </Flex>
+      </Flex>
+    </Box>
   );
 }

@@ -11,6 +11,8 @@ import {
 
 import { DM_Sans } from "next/font/google";
 import { Notifications } from "@mantine/notifications";
+import BaseShell from "@/components/layout/shell";
+import Head from "next/head";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -42,9 +44,15 @@ const theme = createTheme({
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <MantineProvider defaultColorScheme="light" theme={theme}>
+      <Head>
+        <title>BUNNA BANK - BMart</title>
+        <meta name="description" content="BUNNA BANK - BMart" />
+      </Head>
       <Notifications />
       <main className={dmSans.className}>
-        <Component {...pageProps} />
+        <BaseShell>
+          <Component {...pageProps} />
+        </BaseShell>
       </main>
     </MantineProvider>
   );
