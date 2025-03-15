@@ -1,4 +1,3 @@
-"use client";
 import { TextInput } from "@mantine/core";
 import classes from "./style.module.css";
 import React from "react";
