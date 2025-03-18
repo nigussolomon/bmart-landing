@@ -75,7 +75,11 @@ export default function Index() {
     <Box>
       <Modal opened={opened} onClose={toggle} title="App Download QR">
         <Flex align="center" gap={15}>
-          <QRCodeSVG value={user?.fullName || ""} />
+          <QRCodeSVG
+            value={
+              "https://drive.google.com/file/d/1l6Cqcb5TAC5BTl2_j-je8MOFiXTJc1bO/view?usp=sharing"
+            }
+          />
           <Flex direction="column">
             <Title order={5}>{user?.fullName}</Title>
             <Title c="dimmed" order={5}>
@@ -84,6 +88,9 @@ export default function Index() {
           </Flex>
         </Flex>
         <Divider my="xs" />
+        <Anchor href="https://drive.google.com/file/d/1l6Cqcb5TAC5BTl2_j-je8MOFiXTJc1bO/view?usp=sharing">
+          Download App
+        </Anchor>
       </Modal>
       <Flex gap="xl" style={{ width: "100%" }} justify="space-between">
         <Flex justify="center" gap={50} direction="column">
