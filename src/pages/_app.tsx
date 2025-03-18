@@ -45,7 +45,7 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <MantineProvider defaultColorScheme="light" theme={theme}>
       <Head>
-        <title>BUNNA BANK - BMart</title>
+        <title>BUNNA BANK - BMART</title>
         <meta name="description" content="BUNNA BANK - BMart" />
       </Head>
       <Notifications />
