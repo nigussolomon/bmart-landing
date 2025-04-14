@@ -77,7 +77,7 @@ export default function Index() {
         <Flex align="center" gap={15}>
           <QRCodeSVG
             value={
-              "https://drive.google.com/file/d/1l6Cqcb5TAC5BTl2_j-je8MOFiXTJc1bO/view?usp=sharing"
+              "https://drive.google.com/file/d/1vXy9IEFOeyqJziH8DCD4VhQoxTPF59Ae/view?usp=sharing"
             }
           />
           <Flex direction="column">
@@ -88,7 +88,7 @@ export default function Index() {
           </Flex>
         </Flex>
         <Divider my="xs" />
-        <Anchor href="https://drive.google.com/file/d/1l6Cqcb5TAC5BTl2_j-je8MOFiXTJc1bO/view?usp=sharing">
+        <Anchor href="https://drive.google.com/file/d/1vXy9IEFOeyqJziH8DCD4VhQoxTPF59Ae/view?usp=sharing">
           Download App
         </Anchor>
       </Modal>
